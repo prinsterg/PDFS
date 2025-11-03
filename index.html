@@ -256,7 +256,7 @@
       const tw = fC.widthOfTextAtSize(String(settings.C.text), settings.C.size);
       cx = (bw - tw)/2;
     }
-    back.drawText(String(settings.C.text), { x: cx, y: settings.C.y, size: settings.C.size, color: RED, font: fC });
+    back.drawText(String(settings.C.text), { x: cx, y: settings.C.y, size: settings.C.size, color: rgb(0, 0, 0), font: fC });
 
     return await pdfDoc.save();
   }
