@@ -3,45 +3,164 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PDF Stamper — Fixed Build (GitHub Pages)</title>
+  <title>PDF Stamper — Donation Flow + Test Screen</title>
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script>
   <style>
-    :root { --bg:#0f172a; --panel:#111827; --muted:#94a3b8; --fg:#e5e7eb; --accent:#22d3ee; }
+    :root { --bg:#0f172a; --panel:#111827; --muted:#94a3b8; --fg:#e5e7eb; --accent:#22d3ee; --red:#ef4444; }
     *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);} 
-    .wrap{max-width:900px;margin:32px auto;padding:0 16px}
+    .wrap{max-width:980px;margin:24px auto;padding:0 16px}
     .card{background:var(--panel);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:20px;border:1px solid #1f2937}
     h1{font-size:28px;margin:0 0 6px}
     p.sub{color:var(--muted);margin:0 0 16px}
-    button{appearance:none;border:0;background:var(--accent);color:#001014;font-weight:700;padding:12px 16px;border-radius:12px;cursor:pointer;transition:transform .05s ease,opacity .2s;margin-right:8px}
-    button.secondary{background:#e5e7eb;color:#111}
-    button:active{transform:translateY(1px)}
     .muted{color:var(--muted)}
-    code{background:#0b1324;border:1px solid #243041;border-radius:8px;padding:2px 6px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    label{display:block;font-size:12px;color:var(--muted);margin:8px 0 6px}
+    input, select{width:100%;background:#0b1324;border:1px solid #243041;color:var(--fg);padding:10px 12px;border-radius:10px;outline:none}
+    input[type="number"]{appearance:textfield}
+    button{appearance:none;border:0;background:var(--accent);color:#001014;font-weight:700;padding:12px 16px;border-radius:12px;cursor:pointer;transition:transform .05s ease,opacity .2s}
+    button.secondary{background:#e5e7eb;color:#111}
+    button.red{background:var(--red);color:#001014}
+    button.ghost{background:transparent;border:1px solid #334155;color:#cbd5e1}
+    button:active{transform:translateY(1px)}
+    .grid{display:grid;gap:16px}
+    .section{border:1px solid #1f2937;border-radius:12px;padding:12px}
+    .title{font-weight:700}
+    .tabs{display:flex;gap:8px;margin-bottom:12px}
+    .tabs button{background:#0b1324;border:1px solid #1f2937;color:#cbd5e1}
+    .tabs button.active{background:#111827;border-color:#334155}
+    .hidden{display:none}
+    .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+    .choices button{padding:18px;border-radius:14px;border:1px solid #334155;background:#0b1324;color:#e5e7eb;font-weight:800}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>PDF Stamper — Fixed Build (GitHub Pages)</h1>
-      <p class="sub">This build removes all file pickers and uses assets in the same folder as this page. It will stamp your PDF using the exact settings you provided.</p>
-
-      <ul class="muted">
-        <li><b>Loads</b> <code>template.pdf</code> from the same folder.</li>
-        <li><b>Fonts</b> (if present): <code>Goldman-Regular.ttf</code> and <code>Goldman-Bold.ttf</code> (case‑sensitive).</li>
-        <li><b>Color</b>: <code>#EF4444</code>.</li>
-        <li><b>Front (page 1)</b> — Text A: <code>"6"</code> at (1130, 377), size 70, Goldman Regular.</li>
-        <li><b>Front (page 1)</b> — Text B: <code>"210"</code> at (1789, 377), size 70, Goldman Regular.</li>
-        <li><b>Back (page 2)</b> — Text C: <code>"Yourgay123"</code> centered horizontally, y=685, size 100, Goldman Bold.</li>
-      </ul>
-
-      <div>
-        <button id="preview" class="secondary">Preview</button>
-        <button id="download">Download</button>
-        <span class="muted" id="status" style="margin-left:12px" aria-live="polite"></span>
+      <div class="tabs">
+        <button id="tabFlow" class="active">Donation flow</button>
+        <button id="tabTest">Test screen</button>
+        <span class="muted" id="status" style="margin-left:auto"></span>
       </div>
 
-      <p class="muted" style="margin-top:12px">Place this file, <code>template.pdf</code>, and the two font files (optional) together. If a font file is missing, the app falls back to Helvetica.</p>
+      <!-- Donation Flow -->
+      <div id="flow">
+        <h1>Which donation request do you want to make?</h1>
+        <div class="choices">
+          <button data-loc="Top Shot Cottleville">Top Shot Cottleville</button>
+          <button data-loc="Axe Throwing Missouri">Axe Throwing Missouri</button>
+          <button data-loc="Axe Throwing Texas">Axe Throwing Texas</button>
+        </div>
+        <div id="flowForm" class="hidden">
+          <p class="sub"><b id="pickedLoc">—</b></p>
+          <div class="row">
+            <div>
+              <label>What code do you want to use? (Text C)</label>
+              <input id="flowCode" placeholder="e.g., COTTL-ABCD" />
+            </div>
+            <div>
+              <label>How many people for the voucher? (Text A)</label>
+              <select id="flowPeople"></select>
+              <div class="muted" style="font-size:12px;margin-top:4px">Text B will be Text A × 35.</div>
+            </div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="flowPreview" class="secondary">Preview</button>
+            <button id="flowDownload" class="red">Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test screen -->
+      <div id="test" class="hidden">
+        <h1>PDF Stamper — Test screen</h1>
+        <p class="sub">Adjust positions/text, then Preview or Download. Uses <code>template.pdf</code> in the same folder; fonts: Goldman-Regular/Bold if present; color #EF4444.</p>
+
+        <div class="section">
+          <div class="title">Front (Page 1) — Text A</div>
+          <div class="row3">
+            <div>
+              <label>Text A</label>
+              <input id="textA" value="6" />
+            </div>
+            <div>
+              <label>X (pts)</label>
+              <input id="xA" type="number" step="1" value="1130" />
+            </div>
+            <div>
+              <label>Y (pts)</label>
+              <input id="yA" type="number" step="1" value="377" />
+            </div>
+          </div>
+          <div class="row3">
+            <div>
+              <label>Font size</label>
+              <input id="sizeA" type="number" min="6" value="70" />
+            </div>
+            <div class="muted" style="display:flex;align-items:end">Font: Goldman Regular</div>
+            <div></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="title">Front (Page 1) — Text B</div>
+          <div class="row3">
+            <div>
+              <label>Text B</label>
+              <input id="textB" value="210" />
+            </div>
+            <div>
+              <label>X (pts)</label>
+              <input id="xB" type="number" step="1" value="1789" />
+            </div>
+            <div>
+              <label>Y (pts)</label>
+              <input id="yB" type="number" step="1" value="377" />
+            </div>
+          </div>
+          <div class="row3">
+            <div>
+              <label>Font size</label>
+              <input id="sizeB" type="number" min="6" value="70" />
+            </div>
+            <div class="muted" style="display:flex;align-items:end">Font: Goldman Regular</div>
+            <div></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="title">Back (Page 2) — Text C</div>
+          <div class="row3">
+            <div>
+              <label>Text C</label>
+              <input id="textC" value="Yourgay123" />
+            </div>
+            <div>
+              <label>Center horizontally</label>
+              <select id="centerC"><option value="yes" selected>Yes</option><option value="no">No</option></select>
+            </div>
+            <div>
+              <label>Y (pts)</label>
+              <input id="yC" type="number" step="1" value="685" />
+            </div>
+          </div>
+          <div class="row3">
+            <div>
+              <label>Font size</label>
+              <input id="sizeC" type="number" min="6" value="100" />
+            </div>
+            <div class="muted" style="display:flex;align-items:end">Font: Goldman Bold</div>
+            <div></div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px">
+          <button id="testPreview" class="secondary">Preview</button>
+          <button id="testDownload">Download</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -50,22 +169,57 @@
   const { PDFDocument, StandardFonts, rgb } = PDFLib;
   const fontkit = window.fontkit;
   const status = document.getElementById('status');
-
-  // ---- Hardcoded settings from your screenshot ----
   const RED = rgb(0xEF/255, 0x44/255, 0x44/255);
-  const S = {
-    A: { text: '6',    x: 1130, y: 377, size: 70, font: 'goldman-regular' },
-    B: { text: '210',  x: 1789, y: 377, size: 70, font: 'goldman-regular' },
-    C: { text: 'Yourgay123', x: 1000, y: 685, size: 100, font: 'goldman-bold', centerX: true }
-  };
-  const OUT_NAME = 'stamped-3spots.pdf';
+
+  // Tabs
+  const flow = document.getElementById('flow');
+  const test = document.getElementById('test');
+  const tabFlow = document.getElementById('tabFlow');
+  const tabTest = document.getElementById('tabTest');
+  function setTab(which){
+    const a = which==='flow';
+    flow.classList.toggle('hidden', !a);
+    test.classList.toggle('hidden', a);
+    tabFlow.classList.toggle('active', a);
+    tabTest.classList.toggle('active', !a);
+  }
+  tabFlow.onclick = ()=> setTab('flow');
+  tabTest.onclick = ()=> setTab('test');
+
+  // Donation flow logic
+  const choices = document.querySelectorAll('.choices button');
+  const flowForm = document.getElementById('flowForm');
+  const pickedLocEl = document.getElementById('pickedLoc');
+  const flowPeople = document.getElementById('flowPeople');
+  const flowCode = document.getElementById('flowCode');
+  let currentLoc = null;
+
+  function fillPeopleOptions(min=4,max=8){
+    flowPeople.innerHTML='';
+    for(let i=min;i<=max;i++){
+      const opt = document.createElement('option');
+      opt.value = String(i); opt.textContent = String(i);
+      flowPeople.appendChild(opt);
+    }
+  }
+  fillPeopleOptions(4,8); // default for all three; change per-location later if needed
+
+  choices.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      currentLoc = btn.dataset.loc;
+      pickedLocEl.textContent = currentLoc;
+      // If future per-location ranges are needed, switch here
+      // e.g., if (currentLoc.includes('Cottleville')) fillPeopleOptions(4,8);
+      flowForm.classList.remove('hidden');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
 
   async function fetchArrayBuffer(url){
     const res = await fetch(url, { cache: 'no-cache' });
     if(!res.ok) throw new Error('Missing required asset: ' + url);
     return await res.arrayBuffer();
   }
-
   async function tryFetchArrayBuffer(url){
     try { return await fetchArrayBuffer(url); } catch(_) { return null; }
   }
@@ -74,76 +228,56 @@
     return await fetchArrayBuffer('template.pdf');
   }
 
-  async function buildStamped(){
+  async function buildStamped(settings){
     const pdfBytes = await loadPdf();
     const pdfDoc = await PDFDocument.load(pdfBytes);
     if (fontkit) pdfDoc.registerFontkit(fontkit);
 
     const helv = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
-    // Load fonts if available
-    let goldmanRegular = helv;
-    let goldmanBold = helv;
+    let goldmanRegular = helv, goldmanBold = helv;
     const regBuf = await tryFetchArrayBuffer('Goldman-Regular.ttf');
-    if (regBuf){ try { goldmanRegular = await pdfDoc.embedFont(regBuf, { subset: true }); } catch(_){} }
+    if (regBuf){ try { goldmanRegular = await pdfDoc.embedFont(regBuf, { subset:true }); } catch(_){} }
     const boldBuf = await tryFetchArrayBuffer('Goldman-Bold.ttf');
-    if (boldBuf){ try { goldmanBold = await pdfDoc.embedFont(boldBuf, { subset: true }); } catch(_){} }
+    if (boldBuf){ try { goldmanBold = await pdfDoc.embedFont(boldBuf, { subset:true }); } catch(_){} }
 
-    function pickFont(tag){
-      switch(tag){
-        case 'goldman-regular': return goldmanRegular;
-        case 'goldman-bold': return goldmanBold;
-        default: return helv;
-      }
-    }
-
-    // FRONT (page 1)
+    // FRONT
     const front = pdfDoc.getPage(0);
-    const { width: fw, height: fh } = front.getSize();
+    const fA = goldmanRegular; const fB = goldmanRegular;
+    front.drawText(String(settings.A.text), { x: settings.A.x, y: settings.A.y, size: settings.A.size, color: RED, font: fA });
+    front.drawText(String(settings.B.text), { x: settings.B.x, y: settings.B.y, size: settings.B.size, color: RED, font: fB });
 
-    const fA = pickFont(S.A.font);
-    front.drawText(S.A.text, { x: S.A.x, y: S.A.y, size: S.A.size, color: RED, font: fA });
-
-    const fB = pickFont(S.B.font);
-    front.drawText(S.B.text, { x: S.B.x, y: S.B.y, size: S.B.size, color: RED, font: fB });
-
-    // BACK (page 2)
+    // BACK
     if (pdfDoc.getPageCount() < 2) throw new Error('template.pdf has only 1 page; need a back page.');
     const back = pdfDoc.getPage(1);
-    const { width: bw } = back.getSize();
-
-    const fC = pickFont(S.C.font);
-    let cx = S.C.x;
-    if (S.C.centerX){
-      const tw = fC.widthOfTextAtSize(S.C.text, S.C.size);
-      cx = (bw - tw) / 2;
+    const fC = goldmanBold;
+    let cx = settings.C.x;
+    if (settings.C.centerX){
+      const { width: bw } = back.getSize();
+      const tw = fC.widthOfTextAtSize(String(settings.C.text), settings.C.size);
+      cx = (bw - tw)/2;
     }
-    back.drawText(S.C.text, { x: cx, y: S.C.y, size: S.C.size, color: RED, font: fC });
+    back.drawText(String(settings.C.text), { x: cx, y: settings.C.y, size: settings.C.size, color: RED, font: fC });
 
     return await pdfDoc.save();
   }
 
   function downloadBytes(bytes, name){
-    const blob = new Blob([bytes], { type: 'application/pdf' });
+    const blob = new Blob([bytes], { type:'application/pdf' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    const a = document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=> URL.revokeObjectURL(url), 1500);
   }
-
   function previewBytes(bytes, name){
-    const blob = new Blob([bytes], { type: 'application/pdf' });
-    if (window.navigator && window.navigator.msSaveOrOpenBlob){ window.navigator.msSaveOrOpenBlob(blob, name); return; }
+    const blob = new Blob([bytes], { type:'application/pdf' });
     const url = URL.createObjectURL(blob);
     const w = window.open('', '_blank', 'noopener');
-    if (w) {
+    if (w){
       w.document.title = name; w.document.body.style.margin = '0';
       const bar = w.document.createElement('div'); bar.style.cssText = 'position:fixed;top:0;left:0;right:0;height:48px;display:flex;gap:8px;align-items:center;padding:0 12px;background:#111;color:#eee;font-family:system-ui,Segoe UI,Roboto;z-index:10;';
       const btnDl = w.document.createElement('button'); btnDl.textContent = 'Download'; btnDl.style.cssText = 'padding:6px 10px;border:0;border-radius:8px;background:#22d3ee;color:#001014;font-weight:700;cursor:pointer;';
       const btnPr = w.document.createElement('button'); btnPr.textContent = 'Print'; btnPr.style.cssText = 'padding:6px 10px;border:0;border-radius:8px;background:#e5e7eb;color:#111;font-weight:700;cursor:pointer;';
       const iframe = w.document.createElement('iframe'); iframe.style.cssText = 'position:fixed;top:48px;left:0;width:100%;height:calc(100vh - 48px);border:0;'; iframe.src = url;
-      btnDl.onclick = ()=> downloadBytes(bytes, name);
-      btnPr.onclick = ()=> { iframe.contentWindow && iframe.contentWindow.focus(); w.print(); };
+      btnDl.onclick = ()=> downloadBytes(bytes, 'stamped.pdf'); btnPr.onclick = ()=> { iframe.contentWindow && iframe.contentWindow.focus(); w.print(); };
       w.document.body.appendChild(bar); bar.appendChild(btnDl); bar.appendChild(btnPr); w.document.body.appendChild(iframe);
       w.addEventListener('beforeunload', ()=> URL.revokeObjectURL(url));
     } else {
@@ -151,18 +285,50 @@
     }
   }
 
-  async function doPreview(){
-    try{ status.textContent='Working…'; const bytes = await buildStamped(); previewBytes(bytes, OUT_NAME); status.textContent='Opened preview.'; }
-    catch(e){ console.error(e); alert('PDF Error:\n' + (e?.message||e)); status.textContent=''; }
-  }
+  // Wire donation flow buttons
+  async function runFlow(preview){
+    try{
+      status.textContent='Working…';
+      if (!currentLoc) throw new Error('Pick a location first.');
+      const A = parseInt(flowPeople.value, 10);
+      const B = A * 35;
+      const C = (flowCode.value || '').trim();
+      if (!C) throw new Error('Enter a code to use (Text C).');
 
-  async function doDownload(){
-    try{ status.textContent='Working…'; const bytes = await buildStamped(); downloadBytes(bytes, OUT_NAME); status.textContent='Download started.'; }
-    catch(e){ console.error(e); alert('PDF Error:\n' + (e?.message||e)); status.textContent=''; }
+      const settings = {
+        A: { text: A, x: 1130, y: 377, size: 70 },
+        B: { text: B, x: 1789, y: 377, size: 70 },
+        C: { text: C, x: 1000, y: 685, size: 100, centerX: true }
+      };
+      const bytes = await buildStamped(settings);
+      if (preview) previewBytes(bytes, 'stamped-3spots.pdf'); else downloadBytes(bytes, 'stamped-3spots.pdf');
+      status.textContent = preview ? 'Opened preview.' : 'Download started.';
+    } catch(e){
+      console.error(e); alert('PDF Error:\n' + (e?.message||e)); status.textContent='';
+    }
   }
+  document.getElementById('flowPreview').onclick = ()=> runFlow(true);
+  document.getElementById('flowDownload').onclick = ()=> runFlow(false);
 
-  document.getElementById('preview').addEventListener('click', doPreview);
-  document.getElementById('download').addEventListener('click', doDownload);
+  // Test screen actions
+  async function runTest(preview){
+    try{
+      status.textContent='Working…';
+      const settings = {
+        A: { text: document.getElementById('textA').value, x: parseFloat(document.getElementById('xA').value), y: parseFloat(document.getElementById('yA').value), size: parseFloat(document.getElementById('sizeA').value) },
+        B: { text: document.getElementById('textB').value, x: parseFloat(document.getElementById('xB').value), y: parseFloat(document.getElementById('yB').value), size: parseFloat(document.getElementById('sizeB').value) },
+        C: { text: document.getElementById('textC').value, x: 1000, y: parseFloat(document.getElementById('yC').value), size: parseFloat(document.getElementById('sizeC').value), centerX: document.getElementById('centerC').value==='yes' }
+      };
+      const bytes = await buildStamped(settings);
+      if (preview) previewBytes(bytes, 'stamped-3spots.pdf'); else downloadBytes(bytes, 'stamped-3spots.pdf');
+      status.textContent = preview ? 'Opened preview.' : 'Download started.';
+    } catch(e){ console.error(e); alert('PDF Error:\n' + (e?.message||e)); status.textContent=''; }
+  }
+  document.getElementById('testPreview').onclick = ()=> runTest(true);
+  document.getElementById('testDownload').onclick = ()=> runTest(false);
+
+  // Initialize
+  setTab('flow');
 })();
 </script>
 </body>
