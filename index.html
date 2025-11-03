@@ -298,10 +298,12 @@
       const settings = {
         A: { text: A, x: 1130, y: 377, size: 70 },
         B: { text: B, x: 1789, y: 377, size: 70 },
-        C: { text: C, x: 1000, y: 685, size: 100, centerX: true }
+        C: { text: C, x: 1000, y: 750, size: 100, centerX: true }
       };
       const bytes = await buildStamped(settings);
-      if (preview) previewBytes(bytes, 'stamped-3spots.pdf'); else downloadBytes(bytes, 'stamped-3spots.pdf');
+      const fileName = `${C}_Donation_Voucher.pdf`;
+      if (preview) previewBytes(bytes, fileName);
+      else downloadBytes(bytes, fileName);
       status.textContent = preview ? 'Opened preview.' : 'Download started.';
     } catch(e){
       console.error(e); alert('PDF Error:\n' + (e?.message||e)); status.textContent='';
